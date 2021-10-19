@@ -6,7 +6,7 @@ global peer
 HEADER = 64
 # SERVER_IP # CHANGE TO PEER FOR CONNECTING IN FUTURE USING INPUT
 PORT = 1081
-ADDR = ("192.168.1.124", PORT)  # should point to local ipv4 for to init a server
+ADDR = ("YOUR_IP", PORT)  # should point to local ipv4 for to init a server
 FORMAT = 'utf-8'
 DISCONNECT = "DISCONNECT"
 ROOMS = {}
