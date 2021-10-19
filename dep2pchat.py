@@ -5,8 +5,7 @@ import time
 global peer
 HEADER = 64
 # SERVER_IP # CHANGE TO PEER FOR CONNECTING IN FUTURE USING INPUT
-PORT = 1081
-ADDR = ("YOUR_IP", PORT)  # should point to local ipv4 for to init a server
+ADDR = () # should point to local ipv4 for to init a server
 FORMAT = 'utf-8'
 DISCONNECT = "DISCONNECT"
 ROOMS = {}
@@ -31,6 +30,8 @@ def handle_connect(conn, addr):  # Add check if node
             elif msg[0:2] == "!R":
                 if len(room) >= 1:
                     ROOM_MEMBER[room].remove(conn)
+                    if len(ROOM_MEMBER[room]) < 1:
+                        ROOMS.pop(room)
 
                 room = msg[2:len(msg)]
                 if room in ROOM_MEMBER:  # CHECK TO SEE IF MEMBER OF ROOM, ADD ALERT OF JOIN
@@ -92,9 +93,9 @@ def handle_init():
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 2}")
 
 
-def syncwithpeer():
+def syncwithpeer(addr):
     connect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connect.connect(ADDR)  # change to user input .... should be IP / port of peer
+    connect.connect(addr)  # change to user input .... should be IP / port of peer
     global peer
     peer = connect
     print("[SYNCED]")
@@ -130,21 +131,27 @@ def send(msg):
 
 v = input("[RUN AS NODE?] [Y/N]")
 if v == 'Y' or v == 'y':
+    ip = input("[IP TO BIND SERVER INSTANCE] >>> ")
+    port = input("[PORT] >>> ")
+    ADDR = (ip, int(port))
     print("[STARTING] Server Is Starting....")
     init = threading.Thread(target=handle_init)
     init.start()
 else:
     pass
 
-
-print(f"[SYNCING] ::::: {ADDR}")
-syncwithpeer()
+time.sleep(2)
+print("[PEER INFO]")
+ip = input("[IP] >>> ")
+port = input("[PORT] >>> ")
+addr = (ip, int(port))
+syncwithpeer(addr)
+print(f"[SYNCING] ::::: [{ip}][{port}]")
 
 always_receive = threading.Thread(target=receive)
 always_receive.start()
 
 NAME = input("[Screen Name] >>> ")
-
 ROOM = input("[Room ID] >>> ")
 enter_room(ROOM)
 
