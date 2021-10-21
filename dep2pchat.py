@@ -4,6 +4,7 @@ import time
 
 
 n = False
+global NODE_CONN
 global my_node
 global peer
 HEADER = 64
@@ -15,14 +16,14 @@ ROOM_MEMBER = {}
 ROOM_MEMBER_NODES = {}  # implement check if node current peer goes down, switch to next node in list
 current_room = ""
 server_addr = ""
-global NODE_CONN
+
 
 def handle_connect(conn, addr):
     connected = True
     # Add Send ROOM_MEMBER_NODES list , ROOMS TO EACH NODE
+    current_room_conn = ""
     while connected:
         broadcast = ""
-        current_room_conn = ""
         msg_length = conn.recv(HEADER).decode(FORMAT)  # 64 BYTE HEADER MSG CONTAINING LENGTH OF ACTUAL MSG
         if msg_length:  # IF LENGTH IS NOT 0
             msg = conn.recv(int(msg_length)).decode(FORMAT)  # WAIT FOR MSG SIZE MSG_LENGTH
@@ -62,8 +63,6 @@ def handle_connect(conn, addr):
                         send(msg)  # sends message too peer if not 0 peer
                         time.sleep(1)
 
-
-
             if msg[0:2] == "!K":  # ROuter COMMAND
                 room = msg[2:len(msg)]
                 msg_size = conn.recv(HEADER).decode(FORMAT)
@@ -76,10 +75,16 @@ def handle_connect(conn, addr):
 
                 ROOMS_MSG[room].append(msg_text.decode(FORMAT))
 
+            if msg == "!D":
+                connnected = False
+                break
+
             if broadcast:  # send mesasge to EVERY room member
                 for x in ROOM_MEMBER[current_room_conn]:
                     connsend(x, "!K" + current_room_conn)
                     connsend(x, broadcast)
+
+    conn.close()
 
 
 def handle_init():
@@ -136,8 +141,7 @@ def receive():  # send everything received from peer to node
                 pass
 
 
-#new function  everything that i recieve from the node send to peer
-def get_from_node():
+def get_from_node():  # everything that i recieve from the node send to peer
     while True:
         msg_length = my_node.recv(HEADER).decode(FORMAT)
         if msg_length:
