@@ -7,7 +7,6 @@ Fundemantal ideas of project:
  
  If everyone leaves a room, as in there is no active connections to the room at any given moment, the room is deleted, so, only active rooms are passed on to future nodes. (Coming soon, for now rooms are stored until the instance dies)
  
- if a node points to another node, and someone 
 
 Upcoming updates:
 1. autoamtic node finding, for now if the original peer you pointed to goes down you must manually restart and connect to a live node.
@@ -27,10 +26,12 @@ How to Use:
   `[PORT] >>>` 
  
   If you're not a node, you must enter a peer to sync to or else program will fail, if youre node you have 2 options:
+  
     1. Sync with another node that already has room and recieve thier chat logs when you enter a room created on thier server
     2. Sync with yourself and create your own instance 
     
 Please note:
+
 You cannot point towards each other for instance if Person A has Person B as a peer, Person B cannot have Person A as their peer.
  
 Commands : 
@@ -39,4 +40,5 @@ Commands :
 `!D` will disconnect your client from the peer.
 
 Note: Rooms ids can be up to a 64 byte number long
+
 (thats alot of combos)
