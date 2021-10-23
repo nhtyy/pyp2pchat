@@ -16,6 +16,7 @@ ROOM_MEMBER = {}
 ROOM_MEMBER_NODES = {}  # implement check if node current peer goes down, switch to next node in list
 current_room = ""
 server_addr = ""
+PEERS = []
 
 
 def handle_connect(conn, addr):
@@ -32,8 +33,17 @@ def handle_connect(conn, addr):
                 global NODE_CONN
                 NODE_CONN = conn
 
+            if msg == "!P":
+                PEERS.append(conn)
+
             if msg[0:2] == "!R":
                 room = msg[2:len(msg)]
+
+                if len(current_room_conn) >= 1:
+                    ROOM_MEMBER[current_room_conn].remove(conn)
+                    if len(ROOM_MEMBER[current_room_conn]) == 0:
+                        ROOMS_MSG.pop(current_room_conn)
+
                 current_room_conn = room
                 if room in ROOM_MEMBER:  # CHECK TO SEE IF ROOM IS CREATED IF NOT CREATE IT , ADD ALERT OF JOIN
                     ROOM_MEMBER[room].append(conn)
@@ -41,11 +51,6 @@ def handle_connect(conn, addr):
                 else:
                     ROOM_MEMBER[room] = []
                     ROOM_MEMBER[room].append(conn)  # send index to dict for proper disconnects
-                    if peer_addr != server_addr:
-                        if NODE_CONN in ROOM_MEMBER[room]:
-                            pass
-                        else:
-                            ROOM_MEMBER[room].append(NODE_CONN)
 
                 if room in ROOMS_MSG:
                     for value in ROOMS_MSG[room]:
@@ -57,7 +62,7 @@ def handle_connect(conn, addr):
                         logs = "New Room Created! [{}]".format(room)
                         connsend(conn, "!K" + room)
                         connsend(conn, logs)
-                        ROOMS_MSG[room].append(logs)
+                        broadcast = (joined(addr, room))
                     else:
                         ROOMS_MSG[room] = []
                         send(msg)  # sends message too peer if not 0 peer
@@ -67,22 +72,43 @@ def handle_connect(conn, addr):
                 room = msg[2:len(msg)]
                 msg_size = conn.recv(HEADER).decode(FORMAT)
                 msg_text = conn.recv(int(msg_size))
-                for x in ROOM_MEMBER[room]:
-                    if x != conn:
-                        connsend(x, msg)
-                        x.send(msg_size.encode(FORMAT))
-                        x.send(msg_text)
 
-                ROOMS_MSG[room].append(msg_text.decode(FORMAT))
+                if peer_addr != server_addr and conn != NODE_CONN:
+                    if NODE_CONN not in ROOM_MEMBER[room]:
+                        connsend(NODE_CONN, msg)
+                        connsend(NODE_CONN, msg_text.decode(FORMAT))
+
+                if room in ROOM_MEMBER:
+                    for x in ROOM_MEMBER[room]:
+                        if x != conn:
+                            connsend(x, msg)
+                            x.send(msg_size.encode(FORMAT))
+                            x.send(msg_text)
+
+                for PEER in PEERS:
+                    if conn != PEER:
+                        if PEER not in ROOM_MEMBER[room]:
+                            connsend(PEER, msg)
+                            connsend(PEER, msg_text.decode(FORMAT))
+
+                if room in ROOMS_MSG:
+                    ROOMS_MSG[room].append(msg_text.decode(FORMAT))
 
             if msg == "!D":
                 connnected = False
+                ROOM_MEMBER[current_room_conn].remove(conn)
+                if len(ROOM_MEMBER[current_room_conn]) == 0:
+                    ROOMS_MSG.pop(current_room_conn)
+
                 break
 
             if broadcast:  # send mesasge to EVERY room member
                 for x in ROOM_MEMBER[current_room_conn]:
                     connsend(x, "!K" + current_room_conn)
                     connsend(x, broadcast)
+
+                if peer_addr == server_addr:
+                    ROOMS_MSG[room].append(broadcast)
 
     conn.close()
 
@@ -107,7 +133,6 @@ def syncwithpeer(peer_addr):
     global peer
     peer = connect
     print("[SYNCED]")
-
     global n
     if n:
         if server_addr != peer_addr:
@@ -231,6 +256,7 @@ if server_addr != peer_addr and n:
     get_from_node_ = threading.Thread(target=get_from_node)
     get_from_node_.start()
     send_to_node("!N")
+    send("!P")
 
 NAME = input("[Screen Name] >>> ")
 ROOM = input("[Room ID] >>> ")
