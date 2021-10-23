@@ -5,7 +5,7 @@ Decentralized P2P python based chat app w/ Rooms!!
 Fundemantal ideas of project:
  Every Node keeps a copy of all the chat rooms they create or join in an instance, and whatever rooms someone who points to them as a peer creates,
  
- If everyone leaves a room, as in there is no active connections to the room at any given moment, the room is deleted, so, only active rooms are passed on to future nodes. (Coming soon, for now rooms are stored until the instance dies)
+ If everyone leaves a room, as in there is no active connections to the room at any given moment, the room is deleted, so, only active rooms are passed on to future nodes.
  
 
 Upcoming updates:
