@@ -25,7 +25,7 @@ How to Use:
   
   `[PORT] >>>` 
  
-  If you're not a node, you must enter a peer to sync to or else program will fail, if youre node you have 2 options:
+  The IP and port of your peer. If youre node you have two options:
   
   1. Sync with another node that already has room and recieve thier chat logs when you enter a room created on thier server
   2. Sync with yourself and create your own instance 
