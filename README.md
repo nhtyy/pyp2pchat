@@ -16,6 +16,7 @@ How to Use:
 
 1. Clone Repo and ensure you're using python 3.6+
 2. `python client.py`  enter in your peers ip and port
+
  To run Server:
 3. `python server.py`
 4. `[IP TO BIND SERVER INSTANCE] >>> `  will instiantiate a server, you will then enter your local ipv4(further details below), or whatever IP you wish to bind the server to and your port , just ensure you have the proper permissions, for local tests, just hit enter and it will automatically use your host address.
