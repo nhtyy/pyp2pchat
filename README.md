@@ -15,8 +15,10 @@ Upcoming updates:
 How to Use:
 
 1. Clone Repo and ensure you're using python 3.6+
-2. `python chat.py`
-3. `[RUN AS NODE?] [Y/N]` --> Yes will instiantiate a server, you will then enter your local ipv4(further details below), or whatever IP you wish to bind the server to and your port , just ensure you have the proper permissions, for local tests, just hit enter and it will automatically use your host address.
+2. `python client.py`  enter in your peers ip and port
+ To run Server:
+3. `python server.py`
+4. `[IP TO BIND SERVER INSTANCE] >>> `  will instiantiate a server, you will then enter your local ipv4(further details below), or whatever IP you wish to bind the server to and your port , just ensure you have the proper permissions, for local tests, just hit enter and it will automatically use your host address.
 
   
   `[PEER INFO]`
@@ -28,7 +30,7 @@ How to Use:
   The IP and port of your peer. If youre node you have two options:
   
   1. Sync with another node that already has room and recieve thier chat logs when you enter a room created on thier server
-  2. Sync with yourself and create your own instance 
+  2. Sync with yourself by leaving blank and create your own instance 
     
 Please note:
 
